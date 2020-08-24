@@ -2,9 +2,7 @@
 #include <fstream>
 using namespace std;
 
-ifstream f("date.in");
-
-struct nMaxim
+struct Pair
 {
     int nr;
     int poz;
@@ -17,13 +15,13 @@ class Vector
 public:
     Vector(int nr, int n);
     Vector(int *v, int n);
-    Vector(const Vector &vCopiere);
+    Vector(const Vector &vCopie);
     ~Vector();
     void actualizare(int nrNou, int nNou);
     int sum();
-    nMaxim maxim();
+    Pair maxim();
     void sortare();
-    void operator = (const Vector &vCopiere);
+    Vector& operator = (const Vector &vCopie);
     int operator * (const Vector v2);
     friend ostream& operator << (ostream& out, Vector v2);
 };
@@ -44,12 +42,12 @@ Vector::Vector(int *v, int n)
         this->v[i] = v[i];
 }
 
-Vector::Vector(const Vector &vCopiere)
+Vector::Vector(const Vector &vCopie)
 {
-    n = vCopiere.n;
+    n = vCopie.n;
     v = new int[n];
     for(int i=0; i<n; i++)
-        v[i] = vCopiere.v[i];
+        v[i] = vCopie.v[i];
 }
 
 Vector::~Vector()
@@ -75,9 +73,9 @@ int Vector::sum()
     return sum;
 }
 
-nMaxim Vector::maxim()
+Pair Vector::maxim()
 {
-    nMaxim maxim;
+    Pair maxim;
     maxim.nr = v[0];
     for(int i=0; i<n; i++)
         if(v[i] > maxim.nr)
@@ -101,18 +99,22 @@ void Vector::sortare()
             }
 }
 
-void Vector::operator = (const Vector &vCopiere)
+Vector& Vector::operator = (const Vector &vCopie)
 {
-    n = vCopiere.n;
+    if(this == &vCopie)
+        return *this;
+    delete [] v;
+    n = vCopie.n;
     v = new int[n];
     for(int i=0; i<n; i++)
-        v[i] = vCopiere.v[i];
+        v[i] = vCopie.v[i];
+    return *this;
 }
 
 int Vector::operator * (const Vector v2)
 {
     if(n != v2.n)
-        return -1;
+        return 0;
     int pScalar = 0;
     for(int i=0; i<n; i++)
         pScalar += v[i] * v2.v[i];
@@ -128,6 +130,7 @@ ostream& operator<<(ostream& out, Vector v2)
 
 int main()
 {
+    ifstream f("date.in");
     int *v, n;
     f>>n;
     v = new int[n];
@@ -149,10 +152,7 @@ int main()
     cout<<"Maximul din v3: "<<maxim<<" pe pozitia: "<<poz<<'\n';
     v3.sortare();                                                     ///metdoda pentru sortare
     cout<<"Vectorul v3 sortat: "<<v3<<'\n';
-    int pScalar = v1 * v3;
-    if(pScalar == -1)
-        cout<<"Vectorii au numar diferit de elemente";
-    else
-        cout<<"Produsul scalar dintre vectorii v1 si v3: "<<pScalar;  ///metoda-operator pentru produs scalar
+    cout<<"v1 * v3: "<<v1 * v3<<'\n';
+    cout<<"v1 * v2: "<<v1 * v2;
     return 0;
 }
